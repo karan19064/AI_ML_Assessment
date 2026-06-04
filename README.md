@@ -111,6 +111,17 @@ AI_ML_Assessment/
 
 ---
 
+## 📊 Machine Learning Evaluation & Business Value
+
+In this project, predicting rare machine failures (0.5% of data) requires specialized metrics and business alignment:
+
+- **Why Accuracy is Misleading:** With a 99.5% normal rate, a model that guesses "no failure" every time is 99.5% accurate but entirely useless.
+- **ROC-AUC (0.92):** The XGBoost model shows excellent overall class separation.
+- **PR-AUC (0.64 vs 0.35):** Precision-Recall AUC is the most critical metric for rare events. XGBoost (0.64) significantly outperformed the Cost-Sensitive Random Forest (0.35) in catching actual failures without triggering false alarms.
+- **Business Cost Optimization:** Missing a failure costs the business $100, while a false alarm costs $1. By sweeping probability thresholds mathematically, we optimized the threshold down to **0.2050**. This alignment dropped the total business cost from $4,237 (default threshold) to **$2,937**, saving the company over 30%!
+
+---
+
 ## 🛠️ Production Debugging (Crucial Scenario)
 
 ### Scenario
