@@ -111,40 +111,157 @@ AI_ML_Assessment/
 
 ---
 
-## 📊 Machine Learning Evaluation & Business Value
+## 🧰 Tech Stack
 
-In this project, predicting rare machine failures requires specialized metrics and business alignment. To address the **0.5% minority class**, SMOTE (Synthetic Minority Over-sampling Technique) and algorithm-level class weighting were evaluated during model training.
-
-- **Why PR-AUC > ROC-AUC:** Although ROC-AUC remained high (0.92), PR-AUC was prioritized because it focuses purely on performance for the minority failure class, making it vastly more informative under severe class imbalance. XGBoost achieved a PR-AUC of **0.64**, significantly outperforming the Cost-Sensitive Random Forest (0.35).
-- **Business Cost Optimization:** Missing a failure costs the business $100, while a false alarm costs $1. By sweeping probability thresholds mathematically, we optimized the threshold down from the default 0.50 to **0.2050**.
-- **Recall Optimization:** Predictive maintenance relies heavily on Recall. The optimized threshold increased Recall from **62.5% to 77.6%**, ensuring more critical machine failures were detected before causing downtime. This alignment dropped the total business cost from $4,237 (default threshold) to **$2,937**, saving the company over 30%!
-- **Production Perspective:** In production, this threshold should be monitored and recalibrated periodically as failure patterns and financial business costs evolve over time.
+| Layer | Technology |
+|---|---|
+| **Language** | Python 3.11+ |
+| **ML Framework** | Scikit-Learn, XGBoost, imbalanced-learn (SMOTE) |
+| **Data** | Pandas, NumPy, Matplotlib |
+| **Backend API** | FastAPI, Uvicorn |
+| **RAG / LLM** | LangChain, Google Gemini API (with offline fallback) |
+| **Embeddings** | HuggingFace `all-MiniLM-L6-v2` (local, no API needed) |
+| **Vector Database** | ChromaDB (persistent local storage) |
+| **Frontend** | HTML5, CSS3 (Glassmorphism dark theme), Vanilla JavaScript |
+| **Containerization** | Docker, Docker Compose |
+| **Testing** | Pytest |
 
 ---
 
-## 🛠️ Production Debugging (Crucial Scenario)
+## 📊 Problem 1 Results: Model Comparison
 
-### Scenario
-*In production, the RAG system starts hallucinating. When a user asks about **"Maternity Leave"**, the retriever fetches chunks related to **"Sick Leave"**, causing the LLM to give the wrong answer confidently.*
+### Evaluation Metrics
 
-### Step-by-Step Mitigation & Debugging Strategy
+| Metric | SMOTE + XGBoost | Cost-Sensitive Random Forest |
+|---|---|---|
+| **ROC-AUC** | 0.9264 | 0.9145 |
+| **PR-AUC** | 0.6405 | 0.3501 |
+| **Precision (Failure)** | 0.65 | 0.37 |
+| **Recall (Failure)** | 0.62 | 0.39 |
+| **F1-Score (Failure)** | 0.64 | 0.38 |
+
+> **Winner: SMOTE + XGBoost** — nearly 2x the PR-AUC of Random Forest, meaning it catches far more real failures with fewer false alarms.
+
+### Why We Chose PR-AUC Over Accuracy
+- **Accuracy is misleading** on imbalanced data. A model that always predicts "no failure" achieves 99.5% accuracy but catches zero failures.
+- **ROC-AUC (0.92)** shows strong overall class separation, but can be overly optimistic when negatives dominate.
+- **PR-AUC (0.64)** is the gold standard for rare-event detection. It strictly evaluates performance on the minority class (failures), ignoring the easy-to-predict majority.
+
+---
+
+## 🎯 Threshold Optimization (Business Cost Alignment)
+
+Instead of using the default 0.50 probability threshold, we performed a mathematical sweep across hundreds of thresholds to minimize real-world business cost:
+
+| Configuration | FN (Missed Failures) | FP (False Alarms) | Total Cost |
+|---|---|---|---|
+| Default Threshold (0.50) | 42 | 37 | **$4,237** |
+| Optimized Threshold (0.2050) | 25 | 437 | **$2,937** |
+
+**Cost Function:** `Total Cost = (FN x $100) + (FP x $1)`
+
+> By lowering the threshold, we deliberately accept more false alarms ($1 each) to catch more real failures ($100 each). This saved **$1,300 (30%)** in projected maintenance costs.
+
+The threshold sweep plots and confusion matrix comparisons are saved in `problem_1_ml/plots/`.
+
+---
+
+## ⚡ Problem 2: Complexity & Memory Analysis
+
+### The Problem
+The original log processor loaded the **entire file into memory** at once. For a 50GB production log file, this would crash the server with an Out-Of-Memory (OOM) error.
+
+### Our Solution: O(1) Space Streaming
+
+| Aspect | Original Code | Our Implementation |
+|---|---|---|
+| **Memory** | O(n) — loads entire file | O(1) — streams line-by-line |
+| **Approach** | `file.readlines()` | Python Generators (`yield`) |
+| **Resource Safety** | Manual close | Context Managers (`__enter__` / `__exit__`) |
+| **API Integration** | None | FastAPI `UploadFile` with async chunk streaming |
+
+**Key Design Patterns Used:**
+- **Generator Functions (`yield`)**: Each line is processed and immediately discarded, keeping memory flat regardless of file size.
+- **Context Managers**: The `LogProcessor` class implements `__enter__` and `__exit__` to guarantee file handles are always closed, even if an exception occurs.
+- **Streaming API**: The FastAPI endpoint reads uploaded files in 1MB chunks, never buffering the full file.
+
+---
+
+## 🧠 RAG Architecture (Problem 3)
+
+```
+User Query ("How much maternity leave do I get?")
+        │
+        ▼
+┌─────────────────────────┐
+│   Query Embedding       │  HuggingFace all-MiniLM-L6-v2 (local)
+│   (384-dim vector)      │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│   ChromaDB Vector Store │  Cosine similarity search
+│   (Persistent on disk)  │  Returns top-K relevant chunks
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│   LLM Generation        │  Google Gemini API (or local fallback)
+│   Prompt = Context +    │  "Answer ONLY from the provided context"
+│   User Query            │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│   Structured Response   │  Returned to the Web Dashboard
+└─────────────────────────┘
+```
+
+**Key Design Decisions:**
+- **Local Embeddings**: We use HuggingFace's `all-MiniLM-L6-v2` model locally, so no API calls or costs are incurred for embedding generation.
+- **Offline Fallback**: If no `GEMINI_API_KEY` is set, the system automatically switches to a **Rule-based Contextual Synthesizer** that parses retrieved chunks using string matching. The app works fully offline.
+- **Persistent Vector Store**: ChromaDB stores embeddings on disk, so the HR policy only needs to be indexed once. Subsequent server restarts skip re-indexing.
+
+---
+
+## 🛡️ Hallucination Prevention & Fixes
+
+### The Scenario
+*In production, the RAG system starts hallucinating. When a user asks about "Maternity Leave", the retriever fetches chunks related to "Sick Leave", causing the LLM to give the wrong answer confidently.*
+
+### Root Cause Analysis & Fixes
 
 #### 1. Evaluating Retrieval Quality
-To diagnose if the issue is a retrieval failure or generation failure, we implement structured retrieval evaluations using a test set of user queries mapped to target document chunks:
-- **Hit Rate (Recall@K)**: Measures the percentage of times the correct policy chunk is returned in the top $K$ results. If this is low for "Maternity Leave", the retriever is failing.
-- **Mean Reciprocal Rank (MRR)**: Evaluates the position of the first relevant chunk. If the relevant chunk is at rank 4, the score is $1/4 = 0.25$. We aim for $\text{MRR} > 0.85$ in production.
-- **Cosine Similarity Drift**: Compare query embedding cosine similarities. If "Maternity Leave" queries are physically close to "Sick Leave" chunks in vector space, the embedding model is failing to partition the topics.
-- **Frameworks**: Integrate automated tools like **Ragas** or **TruLens** to measure **Context Recall** and **Context Precision** continuously on logged production queries.
+- **Hit Rate (Recall@K)**: Measures how often the correct chunk appears in the top K results.
+- **Mean Reciprocal Rank (MRR)**: Evaluates the position of the first relevant chunk. Target: MRR > 0.85.
+- **Cosine Similarity Drift**: If "Maternity Leave" queries are close to "Sick Leave" chunks in vector space, the embedding model is failing.
+- **Monitoring Tools**: Integrate **Ragas** or **TruLens** for continuous Context Recall and Context Precision evaluation.
 
 #### 2. Chunking Strategy Optimizations
-Simple character-based chunking often splits sentences mid-thought, causing semantic loss. We apply the following upgrades:
-- **Metadata Filtering (Query Routing)**: Append tag fields to document chunks during ingestion (e.g. `{"category": "maternity_leave"}`). Implement a lightweight router model or intent classifier at the query layer. If the query is about maternity, apply a metadata filter `where category == 'maternity_leave'` to ChromaDB, completely eliminating the possibility of fetching "Sick Leave" chunks.
-- **Parent-Document Retrieval**: Chunk documents into small sizes (e.g., 100 tokens) for highly granular vector search matching, but store them linked to a larger parent chunk (e.g., 1000 tokens). When a small chunk matches, retrieve and pass the parent chunk to the LLM. This provides broad context to prevent truncation errors.
-- **Semantic Chunking**: Instead of fixed token counts, chunk the document by detecting semantic shifts (embedding differences between sentences). This ensures each chunk represents a single cohesive concept.
+- **Metadata Filtering**: Tag chunks during ingestion (e.g., `{"category": "maternity_leave"}`). Route queries to the correct category before vector search, eliminating cross-topic contamination.
+- **Parent-Document Retrieval**: Use small chunks (100 tokens) for precise matching, but retrieve the larger parent chunk (1000 tokens) for LLM context.
+- **Semantic Chunking**: Split documents by detecting semantic shifts between sentences instead of fixed character counts.
 
-#### 3. Fallback Mechanisms & Guardrails
-To prevent the LLM from confidently answering using irrelevant chunks, we enforce the following safeguards:
-- **Similarity Thresholding**: Establish a strict minimum similarity score (e.g. cosine distance $\le 0.35$). If retrieved chunks fall below this threshold, the retriever flags a low-confidence state.
-- **Context Relevance Guardrail (LLM-as-a-Judge)**: Before generating the final response, run a rapid validation prompt on the retrieved chunks (e.g., *"Is this document context relevant to the user query? Return YES or NO"*). If it returns "NO", skip the generation.
-- **Structured Fallback Response**: When low confidence or irrelevant context is flagged, suppress generation and output a safe, pre-defined response:
-  > *"I'm sorry, I could not find a reliable policy matching your question in my database. Let me connect you directly with the Acme HR Support team."*
+#### 3. Guardrails & Fallback Mechanisms
+- **Similarity Thresholding**: Reject retrieved chunks below a minimum cosine similarity score (e.g., 0.35).
+- **LLM-as-a-Judge**: Before generating the final answer, run a validation prompt: *"Is this context relevant to the query? YES/NO"*. If NO, skip generation.
+- **Structured Fallback**: When confidence is low, suppress generation and return a safe response:
+  > *"I'm sorry, I could not find a reliable policy matching your question. Let me connect you with Acme HR Support."*
+
+---
+
+## 🚀 Future Improvements
+
+| Area | Improvement | Impact |
+|---|---|---|
+| **ML Pipeline** | Add LightGBM and CatBoost models to the comparison | May improve PR-AUC further on categorical features |
+| **ML Pipeline** | Implement cross-validation with stratified K-fold | More robust threshold estimates across data splits |
+| **Log Analyzer** | Add real-time WebSocket streaming for live log monitoring | Enable dashboards to show flagged transactions in real-time |
+| **Log Analyzer** | Support additional log formats (JSON, CSV, Syslog) | Broader production applicability |
+| **RAG System** | Fine-tune embedding model on domain-specific HR vocabulary | Improve retrieval accuracy for niche policy terms |
+| **RAG System** | Add multi-document support (upload multiple HR policies) | Scale to enterprise-level document management |
+| **RAG System** | Implement conversation memory (chat history context) | Enable follow-up questions like "What about for part-time employees?" |
+| **Infrastructure** | Add CI/CD pipeline with GitHub Actions | Automated testing and deployment on every push |
+| **Infrastructure** | Add Prometheus + Grafana monitoring for API latency | Production observability and alerting |
+| **Security** | Implement API key authentication on all endpoints | Prevent unauthorized access in production |
+
