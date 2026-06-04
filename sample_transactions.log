@@ -1,0 +1,8 @@
+usr_101,15200.50,ERROR,Database connection failure
+usr_102,4300.00,ERROR,Invalid credit card details
+usr_103,12000.00,INFO,Login successful
+usr_104,23500.00,ERROR,API Timeout during payment processing
+usr_105,980.00,ERROR,Session expired
+usr_106,45000.00,ERROR,Suspicious multi-device login detected
+usr_107,35000.00,WARNING,High CPU usage warning
+usr_108,11000.00,ERROR,Unauthorized admin portal access attempt

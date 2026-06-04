@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production AI & Log Analytics Console</title>
+    <meta name="description" content="An enterprise dashboard for automated log analysis and RAG HR policy support.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-glow"></div>
+                <i class="fa-solid fa-microchip brand-icon"></i>
+                <h2>AcmeConsole</h2>
+            </div>
+            <nav class="nav-menu">
+                <button id="nav-rag-btn" class="nav-item active">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>HR Policy RAG</span>
+                </button>
+                <button id="nav-logs-btn" class="nav-item">
+                    <i class="fa-solid fa-server"></i>
+                    <span>Log Analyzer</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <span class="status-dot online"></span>
+                    <span>Systems Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h1 id="page-title">Enterprise HR Policy Assistant</h1>
+                    <p id="page-desc">Retrieval-Augmented Generation using local ChromaDB and Gemini API.</p>
+                </div>
+                <div class="header-meta">
+                    <div class="meta-badge">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Production Ready</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- RAG Chat View -->
+            <section id="view-rag" class="view-section active">
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <!-- Welcome message -->
+                        <div class="message system-msg">
+                            <div class="msg-avatar">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="msg-bubble">
+                                <h3>Welcome to the Acme Corp HR Policy Assistant!</h3>
+                                <p>Ask me complex questions about employee policies such as sick leave, bereavement allotments, or maternity leave. I'll retrieve the exact policy chunks from ChromaDB and answer them.</p>
+                                <div class="suggested-queries">
+                                    <button class="suggest-btn" data-query="How many days of bereavement leave am I entitled to if I have been working here for 6 months?">Bereavement Leave (6 Months tenure)</button>
+                                    <button class="suggest-btn" data-query="What is the accrual rate for paid sick leave, and how many days can I carry over?">Sick Leave & Carryover Rules</button>
+                                    <button class="suggest-btn" data-query="What are the maternity leave eligibility criteria and paid weeks for birth mothers?">Maternity Leave Eligibility</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div class="chat-input-area">
+                        <div class="input-wrapper">
+                            <input type="text" id="chat-input" placeholder="Type your HR policy question here (e.g. bereavement leave options)..." autocomplete="off">
+                            <button id="send-btn" aria-label="Send query">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Log Analyzer View -->
+            <section id="view-logs" class="view-section">
+                <div class="logs-container">
+                    <!-- Upload Box -->
+                    <div class="upload-card">
+                        <div class="upload-zone" id="drop-zone">
+                            <input type="file" id="file-input" accept=".log,.txt,.csv" style="display: none;">
+                            <div class="upload-icon">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <h3>Drag & Drop Transaction Log File</h3>
+                            <p>Supports multi-gigabyte files. Upload streams in chunks to prevent server OOM.</p>
+                            <button class="select-btn" onclick="document.getElementById('file-input').click()">Browse Local Files</button>
+                        </div>
+                        
+                        <!-- Uploading/Processing Loader -->
+                        <div id="process-loader" class="process-loader hidden">
+                            <div class="spinner"></div>
+                            <h3 id="loader-status">Uploading transaction logs...</h3>
+                            <div class="progress-bar-container">
+                                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                            </div>
+                            <p>Streaming log generator running line-by-line (O(1) Space Complexity)</p>
+                        </div>
+                    </div>
+
+                    <!-- Results Area (Hidden initially) -->
+                    <div id="analyzer-results" class="results-card hidden">
+                        <div class="results-header">
+                            <div class="results-title">
+                                <i class="fa-solid fa-triangle-exclamation warning-icon"></i>
+                                <h2>Flagged Transactions (> $10,000 threshold)</h2>
+                            </div>
+                            <div class="results-actions">
+                                <span class="badge" id="flagged-count">0 Flagged</span>
+                                <button id="download-csv-btn" class="action-btn">
+                                    <i class="fa-solid fa-download"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Table Wrapper -->
+                        <div class="table-wrapper">
+                            <table id="flagged-table">
+                                <thead>
+                                    <tr>
+                                        <th>Line</th>
+                                        <th>User ID</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="flagged-table-body">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Custom JS -->
+    <script src="index.js"></script>
+</body>
+</html>

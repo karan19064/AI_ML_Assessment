@@ -1,0 +1,28 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Vector Databases
+problem_3_rag/chroma_db/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Ignore generated datasets/plots (optional, but recommended for large files)
+# problem_1_ml/data/*.csv
+# problem_1_ml/plots/*.png
+
+# Ignore test caches
+.pytest_cache/

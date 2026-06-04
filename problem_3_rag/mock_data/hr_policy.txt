@@ -1,0 +1,36 @@
+================================================================================
+ACME CORP - ENTERPRISE HUMAN RESOURCES POLICY MANUAL
+Section 4: Leaves and Absences
+Last Updated: January 1, 2026
+================================================================================
+
+4.1 SICK LEAVE POLICY
+All full-time permanent employees of Acme Corp are entitled to paid sick leave to recover from personal illness, injury, or medical appointments.
+- Accrual Rate: Employees accrue sick leave at a rate of 0.83 days per full calendar month of employment, which totals 10 paid sick leave days per calendar year.
+- Maximum Carryover: A maximum of 5 unused sick leave days may be carried over to the following calendar year. Any additional unused sick leave above 5 days is forfeited on December 31st.
+- Notification: Employees must notify their direct manager by 9:00 AM on each day of absence.
+- Medical Certificate: For absences exceeding 3 consecutive business days, a valid medical certificate from a registered medical practitioner must be submitted to HR.
+- Abuse of Leave: Acme Corp reserves the right to audit sick leave patterns. Unexcused or patterns of frequent Monday/Friday sick leave may result in disciplinary action.
+
+4.2 BEREAVEMENT LEAVE POLICY
+Acme Corp provides paid bereavement leave to support employees during the difficult time of losing a loved one. The number of days allocated depends on the employee's tenure with the company.
+- Definition of Immediate Family: Spouse, child, parent, sibling, grandparent, or domestic partner.
+- Tenure-Based Entitlements:
+  * Less than 6 months of service: Employees are entitled to 1 day of paid bereavement leave for immediate family members.
+  * Between 6 months and 12 months (1 year) of service: Employees are entitled to 3 days of paid bereavement leave for immediate family members.
+  * 12 months (1 year) or more of service: Employees are entitled to 5 days of paid bereavement leave for immediate family members.
+- Extended Leave: If travel of more than 500 miles is required to attend a funeral, an additional 2 days of unpaid leave may be requested, subject to manager approval.
+- Documentation: HR may request proof of passing (e.g., death certificate, obituary) for records.
+
+4.3 MATERNITY AND PARENTAL LEAVE POLICY
+Acme Corp is committed to supporting new parents during the transition of welcoming a new child via birth, adoption, or foster placement.
+- Maternity Leave (Birth Mother):
+  * Eligibility: Full-time employees who have completed at least 12 months (1 year) of continuous service prior to the expected date of childbirth.
+  * Entitlement: Eligible birth mothers are entitled to 12 weeks of fully paid maternity leave. This leave can commence up to 4 weeks before the expected birth date.
+  * Unpaid Extension: Birth mothers may request up to an additional 12 weeks of unpaid parental leave, totaling a maximum of 24 weeks of job-protected leave.
+- Paternity/Spousal Leave:
+  * Eligibility: Non-birth parents (spouses or domestic partners) who have completed at least 12 months (1 year) of continuous service.
+  * Entitlement: Eligible non-birth parents are entitled to 4 weeks of fully paid parental leave, which must be taken within the first 6 months of the child's arrival.
+- Notice Period: Employees must submit a written request for maternity or parental leave to HR at least 10 weeks prior to the anticipated start date, accompanied by a medical certificate or proof of placement.
+- Health Benefits: Acme Corp will continue to pay its portion of health insurance coverage during the paid and unpaid portions of parental leave.
+- Return to Work: Employees are guaranteed return to their original position or an equivalent role with the same pay and benefits upon completion of their leave.
