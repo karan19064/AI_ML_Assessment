@@ -2,16 +2,13 @@
 
 An enterprise-ready, containerized system demonstrating machine learning pipelines, high-performance streaming Python engineering, and Retrieval-Augmented Generation (RAG) architectures.
 
----
+## 🎥 Video Demonstrations
 
-## Video Walkthroughs
-
-- **Video 1 (Machine Learning Pipeline)**: [Link](https://youtu.be/bI9uKCWMQLY)
-- **Video 2 (Log Analyzer API)**: [Link](https://youtu.be/RIXwZdb_c20)
-- **Video 3 (RAG Application)**: [Link](https://youtu.be/v78zcm76VCI)
+- **[Demo 1: Machine Learning Pipeline & Antigravity IDE](https://youtu.be/bI9uKCWMQLY)**
+- **[Demo 2: Log Analyzer API](https://youtu.be/RIXwZdb_c20)**
+- **[Demo 3: RAG Application & Web Console](https://youtu.be/v78zcm76VCI)**
 
 ---
-
 
 ## 🚀 Getting Started
 
@@ -277,13 +274,4 @@ User Query ("How much maternity leave do I get?")
 | **Infrastructure** | Add CI/CD pipeline with GitHub Actions | Automated testing and deployment on every push |
 | **Infrastructure** | Add Prometheus + Grafana monitoring for API latency | Production observability and alerting |
 | **Security** | Implement API key authentication on all endpoints | Prevent unauthorized access in production |
-
----
-
-## Video Walkthroughs
-
-- **Video 1 (Machine Learning Pipeline)**: [Link](https://youtu.be/bI9uKCWMQLY)
-- **Video 2 (Log Analyzer API)**: [Link](https://youtu.be/RIXwZdb_c20)
-- **Video 3 (RAG Application)**: [Link](https://youtu.be/v78zcm76VCI)
-
 
