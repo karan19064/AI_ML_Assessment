@@ -4,7 +4,7 @@ An enterprise-ready, containerized system demonstrating machine learning pipelin
 
 ---
 
-## 🎥 Video Walkthroughs
+## Video Walkthroughs
 
 - **Video 1 (Machine Learning Pipeline)**: [Link](https://youtu.be/bI9uKCWMQLY)
 - **Video 2 (Log Analyzer API)**: [Link](https://youtu.be/RIXwZdb_c20)
@@ -280,7 +280,7 @@ User Query ("How much maternity leave do I get?")
 
 ---
 
-## 🎥 Video Walkthroughs
+## Video Walkthroughs
 
 - **Video 1 (Machine Learning Pipeline)**: [Link](https://youtu.be/bI9uKCWMQLY)
 - **Video 2 (Log Analyzer API)**: [Link](https://youtu.be/RIXwZdb_c20)
