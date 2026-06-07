@@ -4,6 +4,15 @@ An enterprise-ready, containerized system demonstrating machine learning pipelin
 
 ---
 
+## 🎥 Video Walkthroughs
+
+- **Video 1 (Machine Learning Pipeline)**: [Link](https://youtu.be/bI9uKCWMQLY)
+- **Video 2 (Log Analyzer API)**: [Link](https://youtu.be/RIXwZdb_c20)
+- **Video 3 (RAG Application)**: [Link](https://youtu.be/v78zcm76VCI)
+
+---
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -168,6 +177,8 @@ The threshold sweep plots and confusion matrix comparisons are saved in `problem
 
 ## ⚡ Problem 2: Complexity & Memory Analysis
 
+![Transaction Log Analyzer Console](assets/log_analyzer.png)
+
 ### The Problem
 The original log processor loaded the **entire file into memory** at once. For a 50GB production log file, this would crash the server with an Out-Of-Memory (OOM) error.
 
@@ -188,6 +199,8 @@ The original log processor loaded the **entire file into memory** at once. For a
 ---
 
 ## 🧠 RAG Architecture (Problem 3)
+
+![Enterprise HR Policy Assistant RAG Console](assets/rag_console.png)
 
 ```
 User Query ("How much maternity leave do I get?")
